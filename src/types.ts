@@ -35,6 +35,23 @@ export interface User {
   luckyDrawCount?: number;
 }
 
+export interface LuckyDrawPrize {
+  id?: string;
+  name: string;
+}
+
+export interface WeeklyPromotion {
+  id?: string;
+  day: string;
+  title: string;
+  icon?: string;
+  items: {
+    name: string;
+    sub?: string;
+    discount?: string;
+  }[];
+}
+
 export interface Appointment {
   id: string;
   userId: string;

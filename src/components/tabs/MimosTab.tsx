@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, ReactNode } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { User } from '../../types';
-import { Star, Gift, Share2, Ticket, Sparkles, Smile, Coffee, Heart, AlertCircle } from 'lucide-react';
+import { User, LuckyDrawPrize, WeeklyPromotion } from '../../types';
+import { Star, Gift, Share2, Ticket, Sparkles, Smile, Coffee, Heart, AlertCircle, Loader2 } from 'lucide-react';
 import { cn } from '../../utils';
 import { db } from '../../lib/firebase';
-import { doc, updateDoc } from 'firebase/firestore';
+import { doc, updateDoc, collection, onSnapshot, query } from 'firebase/firestore';
 
 interface MimosTabProps {
   user: User;
@@ -14,8 +14,29 @@ interface MimosTabProps {
 export default function MimosTab({ user, onUpdateUser }: MimosTabProps) {
   const [luckyResult, setLuckyResult] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [prizes, setPrizes] = useState<LuckyDrawPrize[]>([]);
+  const [promotions, setPromotions] = useState<WeeklyPromotion[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const prizesUnsubscribe = onSnapshot(collection(db, 'lucky_prizes'), (snapshot) => {
+      setPrizes(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as LuckyDrawPrize[]);
+    });
+
+    const promosUnsubscribe = onSnapshot(collection(db, 'promotions'), (snapshot) => {
+      setPromotions(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as WeeklyPromotion[]);
+      setLoading(false);
+    });
+
+    return () => {
+      prizesUnsubscribe();
+      promosUnsubscribe();
+    };
+  }, []);
 
   const drawLuckyTicket = async () => {
+    if (prizes.length === 0) return;
+
     const now = new Date();
     const getWeekNumber = (d: Date) => {
       const date = new Date(d.getTime());
@@ -37,29 +58,12 @@ export default function MimosTab({ user, onUpdateUser }: MimosTabProps) {
       return;
     }
 
-    const prizes = [
-      '10% OFF em qualquer serviço!',
-      'Mimo surpresa no próximo lavatório!',
-      'Spa Esfoliante de Pés Grátis!',
-      '5% OFF em qualquer serviço hoje!',
-      'R$ 1,99 OFF em qualquer serviço hoje!',
-      'Hidratação com Vaporização capilar Grátis!',
-      'Vale-Presente de R$ 10 para uma amiga!',
-      'Um Abraço bem apertado de algum colaborador!',
-      '15% OFF em qualquer serviço, na próxima visita!',
-      'Vale um café fresquinho!',
-      'Uma frase motivacional para o seu dia!',
-      'Poste um story marcando o salão e ganhe R$ 5 OFF!',
-      'Você escolhe a playlist do salão pelos próximos 30 minutos!',
-      'Ganhe uma Escova no seu próximo serviço de mechas ou coloração!',
-      'Pé e Mão com 5% OFF no seu próximo agendamento!',
-      'Amiga da Vez: Indique uma amiga e ambas ganham 10% OFF na próxima visita!'
-    ];
+    const prizeNames = prizes.map(p => p.name);
 
     const getNewPrize = (exclude?: string | null) => {
-      let available = prizes;
+      let available = prizeNames;
       if (exclude) {
-        available = prizes.filter(p => p !== exclude);
+        available = prizeNames.filter(p => p !== exclude);
       }
       return available[Math.floor(Math.random() * available.length)];
     };
@@ -93,6 +97,23 @@ export default function MimosTab({ user, onUpdateUser }: MimosTabProps) {
       setError('Erro ao retirar bilhete. Tente novamente.');
     }
   };
+
+  const getIcon = (iconName?: string) => {
+    switch (iconName) {
+      case 'Smile': return <Smile className="w-4 h-4" />;
+      case 'Heart': return <Heart className="w-4 h-4" />;
+      case 'Coffee': return <Coffee className="w-4 h-4" />;
+      default: return <Sparkles className="w-4 h-4" />;
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-brand-teal" />
+      </div>
+    );
+  }
 
   return (
     <div className="p-6 pt-12 space-y-8 max-w-md mx-auto min-h-screen">
@@ -135,39 +156,16 @@ export default function MimosTab({ user, onUpdateUser }: MimosTabProps) {
         <h3 className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] ml-1">Mimos da Semana</h3>
         
         <div className="space-y-3">
-          <PromoCard 
-            day="Terça-Feira"
-            title="Terça da Beleza"
-            items={[
-              { name: 'Escova + Hidratação', sub: 'Tratamento de brilho', discount: '12% OFF' },
-              { name: 'Manicure + Pedicure', sub: 'Ritual completo', discount: '12% OFF' },
-              { name: 'Manicure', sub: 'Esmaltação simples', discount: '12% OFF' }
-            ]}
-            icon={<Smile className="w-4 h-4" />}
-            darkMode={user.accessibility?.darkMode}
-          />
-
-          <PromoCard 
-            day="Quarta-Feira"
-            title="Quarta Iluminada"
-            items={[
-              { name: 'Corte + Secagem Feminino', discount: '15% OFF' },
-              { name: 'Manicure + Pedicure', sub: 'Ganha um Spa Esfoliante de Pés' }
-            ]}
-            icon={<Heart className="w-4 h-4" />}
-            darkMode={user.accessibility?.darkMode}
-          />
-
-          <PromoCard 
-            day="Quinta-Feira"
-            title="Quinta Zen"
-            items={[
-              { name: 'Escova + Hidratação', sub: 'Ganha um Tratamento a Vapor' },
-              { name: 'Manutenção de Cílios', discount: '5% OFF' }
-            ]}
-            icon={<Coffee className="w-4 h-4" />}
-            darkMode={user.accessibility?.darkMode}
-          />
+          {promotions.map((promo) => (
+            <PromoCard 
+              key={promo.id}
+              day={promo.day}
+              title={promo.title}
+              items={promo.items}
+              icon={getIcon(promo.icon)}
+              darkMode={user.accessibility?.darkMode}
+            />
+          ))}
         </div>
       </div>
 
@@ -280,7 +278,15 @@ export default function MimosTab({ user, onUpdateUser }: MimosTabProps) {
   );
 }
 
-function PromoCard({ day, title, items, icon, darkMode }: { day: string, title: string, items: any[], icon: React.ReactNode, darkMode?: boolean }) {
+interface PromoCardProps {
+  day: string;
+  title: string;
+  items: { name: string; sub?: string; discount?: string }[];
+  icon: ReactNode;
+  darkMode?: boolean;
+}
+
+const PromoCard: React.FC<PromoCardProps> = ({ day, title, items, icon, darkMode }) => {
   return (
     <div className={cn(
       "p-5 rounded-3xl border shadow-sm",

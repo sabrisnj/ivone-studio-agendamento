@@ -27,4 +27,70 @@ export async function seedServices() {
       console.log(`Added service: ${service.name}`);
     }
   }
+
+  // Seed Lucky Draw Prizes
+  const luckyPrizes = [
+    '10% OFF em qualquer serviço!',
+    'Mimo surpresa no próximo lavatório!',
+    'Spa Esfoliante de Pés Grátis!',
+    '5% OFF em qualquer serviço hoje!',
+    'R$ 1,99 OFF em qualquer serviço hoje!',
+    'Hidratação com Vaporização capilar Grátis!',
+    'Vale-Presente de R$ 10 para uma amiga!',
+    'Um Abraço bem apertado de algum colaborador!',
+    '15% OFF em qualquer serviço, na próxima visita!',
+    'Vale um café fresquinho!',
+    'Uma frase motivacional para o seu dia!',
+    'Poste um story marcando o salão e ganhe R$ 5 OFF!',
+    'Você escolhe a playlist do salão pelos próximos 30 minutos!',
+    'Ganhe uma Escova no seu próximo serviço de mechas ou coloração!',
+    'Pé e Mão com 5% OFF no seu próximo agendamento!',
+    'Amiga da Vez: Indique uma amiga e ambas ganham 10% OFF na próxima visita!'
+  ];
+
+  const luckySnapshot = await getDocs(collection(db, 'lucky_prizes'));
+  if (luckySnapshot.empty) {
+    for (const name of luckyPrizes) {
+      await addDoc(collection(db, 'lucky_prizes'), { name });
+    }
+  }
+
+  // Seed Weekly Promotions
+  const promotions = [
+    {
+      day: "Terça-Feira",
+      title: "Terça da Beleza",
+      icon: "Smile",
+      items: [
+        { name: 'Escova + Hidratação', sub: 'Tratamento de brilho', discount: '12% OFF' },
+        { name: 'Manicure + Pedicure', sub: 'Ritual completo', discount: '12% OFF' },
+        { name: 'Manicure', sub: 'Esmaltação simples', discount: '12% OFF' }
+      ]
+    },
+    {
+      day: "Quarta-Feira",
+      title: "Quarta Iluminada",
+      icon: "Heart",
+      items: [
+        { name: 'Corte + Secagem Feminino', discount: '15% OFF' },
+        { name: 'Manicure + Pedicure', sub: 'Ganha um Spa Esfoliante de Pés' }
+      ]
+    },
+    {
+      day: "Quinta-Feira",
+      title: "Quinta Zen",
+      icon: "Coffee",
+      items: [
+        { name: 'Escova + Hidratação', sub: 'Ganha um Tratamento a Vapor' },
+        { name: 'Manutenção de Cílios', discount: '5% OFF' }
+      ]
+    }
+  ];
+
+  const promoSnapshot = await getDocs(collection(db, 'promotions'));
+  if (promoSnapshot.empty) {
+    for (const promo of promotions) {
+      await addDoc(collection(db, 'promotions'), promo);
+    }
+  }
 }

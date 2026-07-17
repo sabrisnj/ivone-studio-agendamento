@@ -308,6 +308,45 @@ export default function ProfileTab({ user, onUpdateUser, onLogout }: ProfileTabP
           </CollapsibleSection>
         </div>
 
+        {/* Manager Access Section */}
+        <div className="space-y-4">
+          <h3 className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] ml-1">Painel do Gestor</h3>
+          <div className={cn(
+            "p-6 rounded-[2rem] border shadow-sm",
+            user.accessibility?.darkMode ? "bg-zinc-800 border-zinc-700" : "bg-white border-brand-pink/10"
+          )}>
+            <div className="flex items-center gap-4 mb-4">
+              <div className="w-12 h-12 bg-brand-brown rounded-2xl flex items-center justify-center text-white shrink-0 shadow-lg shadow-brand-brown/10">
+                <Shield className="w-6 h-6" />
+              </div>
+              <div>
+                <span className="block font-bold text-[10px] uppercase tracking-widest text-brand-teal">Área Restrita</span>
+                <p className={cn("text-sm font-serif font-bold", user.accessibility?.darkMode ? "text-white" : "text-brand-brown")}>Acesso Administrativo</p>
+              </div>
+            </div>
+            
+            <p className="text-[10px] text-gray-400 mb-6 leading-relaxed">
+              Acesse ferramentas para gerenciar agendamentos, atualizar procedimentos e configurar mimos.
+            </p>
+
+            <button
+              onClick={() => {
+                const pass = prompt('Digite a senha de gestor:');
+                if (pass === 'ivone2026') {
+                  const updatedUser = { ...user, isAdmin: true };
+                  onUpdateUser(updatedUser);
+                  localStorage.setItem('ivone_studio_user', JSON.stringify(updatedUser));
+                } else if (pass !== null) {
+                  alert('Senha incorreta!');
+                }
+              }}
+              className="w-full bg-brand-brown text-white font-bold py-4 rounded-2xl text-[10px] uppercase tracking-widest shadow-xl shadow-brand-brown/20 hover:scale-[1.02] active:scale-95 transition-all"
+            >
+              Acessar Painel
+            </button>
+          </div>
+        </div>
+
         {/* Global Actions */}
         <div className="space-y-4 pt-4 pb-24">
           {activeSection !== 'security' && (
