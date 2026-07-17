@@ -11,6 +11,7 @@ interface HomeTabProps {
 
 export default function HomeTab({ user, onOpenBooking }: HomeTabProps) {
   const firstName = user.name.split(' ')[0];
+  const formattedName = firstName.charAt(0).toUpperCase() + firstName.slice(1).toLowerCase();
 
   // Helper to check if the prize is from the last 15 days
   const isPrizeActive = () => {
@@ -37,13 +38,13 @@ export default function HomeTab({ user, onOpenBooking }: HomeTabProps) {
           "text-4xl font-serif font-bold",
           user.accessibility?.darkMode ? "text-white" : "text-brand-brown"
         )}>
-          Oi, {firstName}
+          Oi, {formattedName}
         </h1>
         <p className={cn(
           "text-sm font-medium italic",
           user.accessibility?.darkMode ? "text-zinc-400" : "text-brand-teal"
         )}>
-          Design de beleza sob medida para realçar sua essência.
+          Seja bem-vinda(o) ao Ivone Studio, aqui, cada detalhe é pensado sob medida para cuidar de você e valorizar a sua essência.
         </p>
       </motion.div>
 

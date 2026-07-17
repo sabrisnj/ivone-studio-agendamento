@@ -171,6 +171,43 @@ export default function MimosTab({ user, onUpdateUser }: MimosTabProps) {
         </div>
       </div>
 
+      {/* More Discounts Section */}
+      <div className="space-y-4">
+        <h3 className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] ml-1">Ganhe Mais Descontos</h3>
+        <div className="space-y-3">
+          <div className={cn(
+            "p-5 rounded-3xl border shadow-sm",
+            user.accessibility?.darkMode ? "bg-zinc-800 border-zinc-700" : "bg-white border-brand-pink/10"
+          )}>
+            <div className="space-y-4">
+              <div className="flex justify-between items-start gap-4">
+                <div className="flex-1">
+                  <p className={cn("text-sm font-semibold", user.accessibility?.darkMode ? "text-zinc-200" : "text-gray-700")}>
+                    Avalie no Google
+                  </p>
+                  <p className="text-[10px] text-gray-400 mt-1">Ganhe 5% de desconto no seu próximo procedimento estético.</p>
+                </div>
+                <span className="bg-brand-pink text-brand-brown text-[10px] font-bold px-2 py-1 rounded-lg shrink-0">
+                  5% OFF
+                </span>
+              </div>
+              <div className="h-px bg-gray-100" />
+              <div className="flex justify-between items-start gap-4">
+                <div className="flex-1">
+                  <p className={cn("text-sm font-semibold", user.accessibility?.darkMode ? "text-zinc-200" : "text-gray-700")}>
+                    Indique e Ganhe
+                  </p>
+                  <p className="text-[10px] text-gray-400 mt-1">Indique uma amiga e ganhe desconto na sua próxima visita.</p>
+                </div>
+                <span className="bg-brand-pink text-brand-brown text-[10px] font-bold px-2 py-1 rounded-lg shrink-0">
+                  5% OFF
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Saturday Lucky Ticket */}
       <div className="space-y-4">
         <h3 className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] ml-1">Sábado da Sorte</h3>

@@ -3,8 +3,9 @@ import { motion } from 'motion/react';
 import { User, UserPreferences } from '../../types';
 import { db } from '../../lib/firebase';
 import { doc, updateDoc } from 'firebase/firestore';
-import { Coffee, Heart, Droplets, Save, LogOut, Shield, User as UserIcon, CheckCircle2 } from 'lucide-react';
+import { Coffee, Heart, Droplets, Save, LogOut, Shield, User as UserIcon, CheckCircle2, ChevronDown, Smartphone, PlayCircle, Apple } from 'lucide-react';
 import { cn } from '../../utils';
+import { AnimatePresence } from 'motion/react';
 
 interface ProfileTabProps {
   user: User;
@@ -30,6 +31,8 @@ export default function ProfileTab({ user, onUpdateUser, onLogout }: ProfileTabP
     name: user.name,
     phone: user.phone
   });
+
+  const [expandedSection, setExpandedSection] = useState<string | null>(null);
 
   const handleSave = async () => {
     setLoading(true);
@@ -254,6 +257,57 @@ export default function ProfileTab({ user, onUpdateUser, onLogout }: ProfileTabP
           </div>
         )}
 
+        {/* Support & Guide Sections */}
+        <div className="space-y-4">
+          <h3 className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] ml-1">Ajuda & Instruções</h3>
+          
+
+          {/* Installation Section */}
+          <CollapsibleSection
+            id="install"
+            title="📲 Instalando o App no Celular"
+            isExpanded={expandedSection === 'install'}
+            onToggle={() => setExpandedSection(expandedSection === 'install' ? null : 'install')}
+            darkMode={user.accessibility?.darkMode}
+          >
+            <div className="space-y-6">
+              <div className="space-y-3">
+                <div className="flex items-center gap-2 text-brand-teal">
+                  <Smartphone className="w-4 h-4" />
+                  <span className="text-[10px] font-bold uppercase tracking-widest">Android (Chrome)</span>
+                </div>
+                <ul className="text-xs text-gray-600 space-y-2 list-disc pl-4">
+                  <li>Abra o app no navegador Chrome.</li>
+                  <li>Toque nos 3 pontos no canto superior direito.</li>
+                  <li>Selecione "Adicionar à tela inicial".</li>
+                  <li>Confirme tocando em "Adicionar".</li>
+                </ul>
+              </div>
+
+              <div className="h-px bg-gray-100" />
+
+              <div className="space-y-3">
+                <div className="flex items-center gap-2 text-brand-pink">
+                  <Apple className="w-4 h-4" />
+                  <span className="text-[10px] font-bold uppercase tracking-widest">iPhone (Safari)</span>
+                </div>
+                <ul className="text-xs text-gray-600 space-y-2 list-disc pl-4">
+                  <li>Abra o app no Safari.</li>
+                  <li>Toque no ícone de compartilhar (quadrado com seta).</li>
+                  <li>Role para baixo e toque em "Adicionar à Tela de Início".</li>
+                  <li>Confirme tocando em "Adicionar".</li>
+                </ul>
+              </div>
+
+              <div className="p-4 bg-brand-teal/5 rounded-2xl text-center">
+                <p className="text-[10px] font-bold text-brand-teal uppercase tracking-widest">
+                  Pronto! O ícone da Ivone Studio aparecerá na sua tela inicial.
+                </p>
+              </div>
+            </div>
+          </CollapsibleSection>
+        </div>
+
         {/* Global Actions */}
         <div className="space-y-4 pt-4 pb-24">
           {activeSection !== 'security' && (
@@ -307,5 +361,54 @@ function TabButton({ active, onClick, label }: { active: boolean, onClick: () =>
     >
       {label}
     </button>
+  );
+}
+
+function CollapsibleSection({ id, title, children, isExpanded, onToggle, darkMode }: { 
+  id: string, 
+  title: string, 
+  children: React.ReactNode, 
+  isExpanded: boolean, 
+  onToggle: () => void,
+  darkMode?: boolean
+}) {
+  return (
+    <div className={cn(
+      "rounded-3xl border shadow-sm overflow-hidden transition-all",
+      darkMode ? "bg-zinc-800 border-zinc-700" : "bg-white border-brand-pink/10"
+    )}>
+      <button
+        onClick={onToggle}
+        className="w-full p-5 flex items-center justify-between text-left"
+      >
+        <span className={cn(
+          "font-serif font-bold",
+          darkMode ? "text-white" : "text-brand-brown"
+        )}>
+          {title}
+        </span>
+        <motion.div
+          animate={{ rotate: isExpanded ? 180 : 0 }}
+          className="text-brand-pink"
+        >
+          <ChevronDown className="w-5 h-5" />
+        </motion.div>
+      </button>
+      
+      <AnimatePresence>
+        {isExpanded && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            className="overflow-hidden"
+          >
+            <div className="p-5 pt-0 border-t border-brand-pink/5">
+              {children}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
   );
 }
