@@ -1,0 +1,38 @@
+{
+  "collections": {
+    "users": {
+      "documents": {
+        "userId": {
+          "name": "string",
+          "phone": "string",
+          "isAdmin": "boolean",
+          "createdAt": "timestamp"
+        }
+      }
+    },
+    "appointments": {
+      "documents": {
+        "appointmentId": {
+          "userId": "string",
+          "userName": "string",
+          "userPhone": "string",
+          "service": "string",
+          "date": "string",
+          "time": "string",
+          "status": "string",
+          "createdAt": "timestamp"
+        }
+      }
+    },
+    "services": {
+      "documents": {
+        "serviceId": {
+          "name": "string",
+          "price": "number",
+          "duration": "string",
+          "category": "string"
+        }
+      }
+    }
+  }
+}

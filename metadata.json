@@ -1,0 +1,6 @@
+{
+  "name": "Ivone Studio",
+  "description": "Aplicativo de agendamento simples para o Ivone Studio, com acesso para clientes e gestora.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
